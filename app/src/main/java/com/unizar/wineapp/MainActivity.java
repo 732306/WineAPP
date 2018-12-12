@@ -12,14 +12,48 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
+
+import java.net.MalformedURLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private MobileServiceClient conexionServerAPI;
+
+    Spinner spinner;
+
+    List<String> listVariety;
+    ArrayAdapter<String> comboAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        spinner = (Spinner) findViewById(R.id.spinner);
+        //spinner.setOnItemSelectedListener(this);
+
+        try {
+            conexionServerAPI = new MobileServiceClient("https://winedss2.azurewebsites.net", this);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+
+        this.obtenerVariedades();
+
+        //comboAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, this.obtenerVariedades());
+
+        //spinner.setAdapter(comboAdapter);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -40,6 +74,24 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+    }
+    private ArrayList<String> obtenerVariedades() {
+        ArrayList<String> listVariety = new ArrayList<>();
+        ListenableFuture<ArrayList> allVariety = conexionServerAPI.invokeApi("ObtenerVariedades", "", ArrayList.class);
+
+        Futures.addCallback(allVariety, new FutureCallback<ArrayList>() {
+            @Override
+            public void onSuccess(ArrayList result) {
+                System.out.println(result.toString());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        });
+
+        return null;
     }
 
     @Override
@@ -80,17 +132,9 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_dss) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_info) {
 
         }
 
