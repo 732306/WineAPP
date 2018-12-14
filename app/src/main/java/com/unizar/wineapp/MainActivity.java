@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -49,6 +50,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         this.obtenerVariedades();
+        this.obtenerRecomendacion();
 
         //comboAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, this.obtenerVariedades());
 
@@ -76,13 +78,29 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
     private ArrayList<String> obtenerVariedades() {
-        ArrayList<String> listVariety = new ArrayList<>();
+        /*ArrayList<String> listVariety = new ArrayList();
         ListenableFuture<ArrayList> allVariety = conexionServerAPI.invokeApi("ObtenerVariedades", "", ArrayList.class);
 
         Futures.addCallback(allVariety, new FutureCallback<ArrayList>() {
-            @Override
+           @Override
             public void onSuccess(ArrayList result) {
-                System.out.println(result.toString());
+                System.out.println("RESULTADO: " + result.toString());
+            }
+
+            @Override
+            public void onFailure(Throwable t) {
+
+            }
+        });
+*/
+
+        //ArrayList<String> listVariety = new ArrayList();
+        ListenableFuture<String> allVariety = conexionServerAPI.invokeApi("ObtenerVariedades", "", String.class);
+
+        Futures.addCallback(allVariety, new FutureCallback<String>() {
+           @Override
+            public void onSuccess(String result) {
+                System.out.println("RESULTADO: " + result.toString());
             }
 
             @Override
@@ -91,6 +109,25 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
+        return null;
+    }
+
+    private Vino obtenerRecomendacion(){
+        final ListenableFuture<Vino> resultado =
+                conexionServerAPI.invokeApi("ObtenerRecomendacion", "", Vino.class);
+
+        Futures.addCallback(resultado,new FutureCallback<Vino>() {
+            @Override
+            public void onFailure(Throwable exc) {
+                // Acciones a realizar si la llamada devuelve un error
+            }
+            @Override
+            public void onSuccess(Vino vino) {
+                TextView tv_test = (TextView) findViewById(R.id.tv_test);
+                tv_test.setText(vino.toString());
+
+            }
+        });
         return null;
     }
 
