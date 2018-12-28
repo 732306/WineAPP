@@ -12,9 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import android.widget.ArrayAdapter;
 
 import com.google.common.util.concurrent.FutureCallback;
 import com.google.common.util.concurrent.Futures;
@@ -24,7 +25,7 @@ import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Collections;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -34,6 +35,7 @@ public class MainActivity extends AppCompatActivity
 
     List<String> listVariety;
     ArrayAdapter<String> comboAdapter;
+    List<String> lista;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,9 +54,6 @@ public class MainActivity extends AppCompatActivity
         this.obtenerVariedades();
         this.obtenerRecomendacion();
 
-        //comboAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, this.obtenerVariedades());
-
-        //spinner.setAdapter(comboAdapter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -77,35 +76,28 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
-    private ArrayList<String> obtenerVariedades() {
-        /*ArrayList<String> listVariety = new ArrayList();
-        ListenableFuture<ArrayList> allVariety = conexionServerAPI.invokeApi("ObtenerVariedades", "", ArrayList.class);
+    private Variedad[] obtenerVariedades() {
+        ListenableFuture<Variedad[]> allVariety = conexionServerAPI.invokeApi("ObtenerVariedades", "", Variedad[].class);
 
-        Futures.addCallback(allVariety, new FutureCallback<ArrayList>() {
+        Futures.addCallback(allVariety, new FutureCallback<Variedad[]>() {
            @Override
-            public void onSuccess(ArrayList result) {
-                System.out.println("RESULTADO: " + result.toString());
-            }
+            public void onSuccess(Variedad[] result) {
+
+               String[] variedadesString = new String[result.length];
+               for (int i=0; i < result.length; i++){
+                   variedadesString[i] = result[i].toString();
+               }
+
+               lista = new ArrayList<>();
+               Collections.addAll(lista, variedadesString);
+               comboAdapter = new ArrayAdapter<>(MainActivity.this,android.R.layout.simple_spinner_dropdown_item, lista);
+
+               //Cargo el spinner con los datos
+               spinner.setAdapter(comboAdapter);
+           }
 
             @Override
             public void onFailure(Throwable t) {
-
-            }
-        });
-*/
-
-        //ArrayList<String> listVariety = new ArrayList();
-        ListenableFuture<String> allVariety = conexionServerAPI.invokeApi("ObtenerVariedades", "", String.class);
-
-        Futures.addCallback(allVariety, new FutureCallback<String>() {
-           @Override
-            public void onSuccess(String result) {
-                System.out.println("RESULTADO: " + result.toString());
-            }
-
-            @Override
-            public void onFailure(Throwable t) {
-
             }
         });
 
@@ -113,18 +105,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     private Vino obtenerRecomendacion(){
-        final ListenableFuture<Vino> resultado =
-                conexionServerAPI.invokeApi("ObtenerRecomendacion", "", Vino.class);
+        final ListenableFuture<Vino[]> listaVinos = conexionServerAPI.invokeApi("ObtenerVinos", "", Vino[].class);
 
-        Futures.addCallback(resultado,new FutureCallback<Vino>() {
+        Futures.addCallback(listaVinos,new FutureCallback<Vino[]>() {
             @Override
             public void onFailure(Throwable exc) {
                 // Acciones a realizar si la llamada devuelve un error
             }
             @Override
-            public void onSuccess(Vino vino) {
+            public void onSuccess(Vino[] vinos) {
                 TextView tv_test = (TextView) findViewById(R.id.tv_test);
-                tv_test.setText(vino.toString());
+                tv_test.setText(vinos[0].toString());
 
             }
         });
