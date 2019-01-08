@@ -14,6 +14,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -31,16 +32,18 @@ import java.util.List;
 import java.util.Collections;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private MobileServiceClient conexionServerAPI;
+    private Spinner spinner;
+    private List<String> listVariety;
+    private ArrayAdapter<Variedad> comboAdapter;
+    private List<Variedad> lista;
 
-    Spinner spinner;
+    private SeekBar seekBar_precio,seekBar_calidad,seekBar_region,seekBar_puntuacion;
+    private TextView tv_peso_precio, tv_peso_calidad, tv_peso_region, tv_peso_puntuacion;
 
-    List<String> listVariety;
-    ArrayAdapter<Variedad> comboAdapter;
-    List<Variedad> lista;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +51,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         spinner = (Spinner) findViewById(R.id.spinner);
-        //spinner.setOnItemSelectedListener(this);
 
         try {
             conexionServerAPI = new MobileServiceClient("https://winedss2.azurewebsites.net", this);
@@ -61,14 +63,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
 
         Button btn_obtener = (Button) findViewById(R.id.btn_obtener);
 
@@ -76,6 +70,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 obtenerRecomendacion((Variedad)spinner.getSelectedItem());
+
             }
         });
 
@@ -92,6 +87,95 @@ public class MainActivity extends AppCompatActivity
         catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
             // silently fail...
         }
+
+        seekBar_calidad = (SeekBar) findViewById(R.id.seekBar_calidad);
+        seekBar_precio = (SeekBar) findViewById(R.id.seekBar_precio);
+        seekBar_region = (SeekBar) findViewById(R.id.seekBar_region);
+        seekBar_puntuacion = (SeekBar) findViewById(R.id.seekBar_puntuacion);
+
+        tv_peso_precio = (TextView) findViewById(R.id.tv_peso_precio);
+        tv_peso_calidad = (TextView) findViewById(R.id.tv_peso_calidad);
+        tv_peso_region = (TextView) findViewById(R.id.tv_peso_region);
+        tv_peso_puntuacion = (TextView) findViewById(R.id.tv_peso_puntuacion);
+
+
+        seekBar_precio.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progress=0;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+                progress = progressValue;
+                tv_peso_precio.setText(progress + "/" + seekBar.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                tv_peso_precio.setText(progress + "/" + seekBar.getMax());
+            }
+        });
+
+        seekBar_calidad.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progress=0;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+                progress = progressValue;
+                tv_peso_calidad.setText(progress + "/" + seekBar.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                tv_peso_calidad.setText(progress + "/" + seekBar.getMax());
+            }
+        });
+
+        seekBar_region.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progress=0;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+                progress = progressValue;
+                tv_peso_region.setText(progress + "/" + seekBar.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                tv_peso_region.setText(progress + "/" + seekBar.getMax());
+            }
+        });
+
+        seekBar_puntuacion.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int progress=0;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progressValue, boolean fromUser) {
+                progress = progressValue;
+                tv_peso_puntuacion.setText(progress + "/" + seekBar.getMax());
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                tv_peso_puntuacion.setText(progress + "/" + seekBar.getMax());
+            }
+        });
+
+        this.getSupportActionBar().setTitle(R.string.recomendador);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -140,14 +224,12 @@ public class MainActivity extends AppCompatActivity
             }
             @Override
             public void onSuccess(Vino[] vinos) {
-                //TextView tv_test = (TextView) findViewById(R.id.tv_test);
                 //tv_test.setMovementMethod(new ScrollingMovementMethod());
                 String todo="";
 
                 for (int i=0; i < vinos.length; i++){
                     todo+=vinos[i].toString() + "\n";
                 }
-                //tv_test.setText(todo);
             }
         });
         return null;
@@ -191,9 +273,10 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_dss) {
-            // Handle the camera action
+        if (id == R.id.nav_recomendador) {
+            this.getSupportActionBar().setTitle(R.string.recomendador);
         } else if (id == R.id.nav_info) {
+            this.getSupportActionBar().setTitle(R.string.info);
 
         }
 

@@ -1,8 +1,13 @@
 <resources>
-    <string name="app_name">WineAPP</string>
+    <string name="app_name">WineAPP. Recomendador de vinos.</string>
+
+    <string name="app_name_titulo">WineAPP</string>
+    <string name="recomendador">Recomendador</string>
+    <string name="info">Información</string>
+
+
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">DSS Wine</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 </resources>
