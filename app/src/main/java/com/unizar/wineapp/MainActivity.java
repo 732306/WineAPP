@@ -3,6 +3,7 @@ package com.unizar.wineapp;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -22,10 +24,13 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.microsoft.windowsazure.mobileservices.MobileServiceClient;
 
+import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -34,8 +39,8 @@ public class MainActivity extends AppCompatActivity
     Spinner spinner;
 
     List<String> listVariety;
-    ArrayAdapter<String> comboAdapter;
-    List<String> lista;
+    ArrayAdapter<Variedad> comboAdapter;
+    List<Variedad> lista;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,8 +57,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         this.obtenerVariedades();
-        this.obtenerRecomendacion();
-
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -66,6 +69,29 @@ public class MainActivity extends AppCompatActivity
                         .setAction("Action", null).show();
             }
         });
+
+        Button btn_obtener = (Button) findViewById(R.id.btn_obtener);
+
+        btn_obtener.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                obtenerRecomendacion((Variedad)spinner.getSelectedItem());
+            }
+        });
+
+        try {
+            Field popup = Spinner.class.getDeclaredField("mPopup");
+            popup.setAccessible(true);
+
+            // Get private mPopup member variable and try cast to ListPopupWindow
+            android.widget.ListPopupWindow popupWindow = (android.widget.ListPopupWindow) popup.get(spinner);
+
+            // Set popupWindow height to 500px
+            popupWindow.setHeight(700);
+        }
+        catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
+            // silently fail...
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -83,16 +109,14 @@ public class MainActivity extends AppCompatActivity
            @Override
             public void onSuccess(Variedad[] result) {
 
-               String[] variedadesString = new String[result.length];
+
+               lista = new ArrayList<Variedad>();
                for (int i=0; i < result.length; i++){
-                   variedadesString[i] = result[i].toString();
+                   lista.add(result[i]);
                }
 
-               lista = new ArrayList<>();
-               Collections.addAll(lista, variedadesString);
-               comboAdapter = new ArrayAdapter<>(MainActivity.this,android.R.layout.simple_spinner_dropdown_item, lista);
-
-               //Cargo el spinner con los datos
+               comboAdapter = new ArrayAdapter<Variedad>(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item, lista);
+               comboAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                spinner.setAdapter(comboAdapter);
            }
 
@@ -104,8 +128,10 @@ public class MainActivity extends AppCompatActivity
         return null;
     }
 
-    private Vino obtenerRecomendacion(){
-        final ListenableFuture<Vino[]> listaVinos = conexionServerAPI.invokeApi("ObtenerVinos", "", Vino[].class);
+    private Vino obtenerRecomendacion(Variedad variedadSeleccionada){
+
+        System.out.println("Nombre de variedad " + variedadSeleccionada.getNombre());
+        final ListenableFuture<Vino[]> listaVinos = conexionServerAPI.invokeApi("ObtenerVinos",variedadSeleccionada.getNombre(), Vino[].class);
 
         Futures.addCallback(listaVinos,new FutureCallback<Vino[]>() {
             @Override
@@ -114,9 +140,14 @@ public class MainActivity extends AppCompatActivity
             }
             @Override
             public void onSuccess(Vino[] vinos) {
-                TextView tv_test = (TextView) findViewById(R.id.tv_test);
-                tv_test.setText(vinos[0].toString());
+                //TextView tv_test = (TextView) findViewById(R.id.tv_test);
+                //tv_test.setMovementMethod(new ScrollingMovementMethod());
+                String todo="";
 
+                for (int i=0; i < vinos.length; i++){
+                    todo+=vinos[i].toString() + "\n";
+                }
+                //tv_test.setText(todo);
             }
         });
         return null;
