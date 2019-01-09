@@ -20,8 +20,20 @@ public class Vino {
         return id;
     }
 
+    public String getCountry() {
+        return country;
+    }
+
+    public String getPoints() {
+        return points;
+    }
+
+    public String getPrice() {
+        return price;
+    }
+
     public String toString() {
-        return "ID: '" + this.id + "' Country: '" + this.country + "', Description: '" + this.description + "', Designation: '" + this.designation + "'";
+        return "ID: '" + this.id + "' Country: '" + this.country + "', Description: '" + this.description + "', Designation: '" + this.designation + " Precio:" +this.price+ " ";
     }
 
 }

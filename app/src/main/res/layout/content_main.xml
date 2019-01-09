@@ -2,13 +2,16 @@
 <android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/layour_config"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="8dp"
+    android:scrollbars="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context=".MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    tools:showIn="@layout/app_bar_main"
+    >
 
 
     <TextView
@@ -19,13 +22,13 @@
         android:text="Variedad"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Caption"
-        android:textColor="#26a69a"
+        android:textColor="@color/colorPrimaryLight"
         android:textSize="18sp" />
 
     <Spinner
         android:id="@+id/spinner"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="30dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
@@ -48,7 +51,7 @@
         android:ems="10"
         android:text="Determinación de Pesos"
         android:textAlignment="center"
-        android:textColor="#26a69a"
+        android:textColor="@color/colorPrimaryLight"
         android:textSize="18dp" />
 
     <TableLayout
@@ -81,7 +84,7 @@
                 android:layout_height="match_parent"
                 android:max="10"
                 android:textAlignment="center"
-                android:thumbTint="#48a999" />
+                android:thumbTint="@color/colorPrimaryLight" />
 
             <TextView
                 android:id="@+id/tv_peso_precio"
@@ -117,7 +120,7 @@
                 android:layout_height="match_parent"
                 android:max="10"
                 android:textAlignment="center"
-                android:thumbTint="#48a999" />
+                android:thumbTint="@color/colorPrimaryLight" />
 
             <TextView
                 android:id="@+id/tv_peso_calidad"
@@ -153,7 +156,7 @@
                 android:layout_height="match_parent"
                 android:max="10"
                 android:textAlignment="center"
-                android:thumbTint="#48a999" />
+                android:thumbTint="@color/colorPrimaryLight" />
 
             <TextView
                 android:id="@+id/tv_peso_region"
@@ -190,7 +193,7 @@
                 android:layout_height="match_parent"
                 android:max="10"
                 android:textAlignment="center"
-                android:thumbTint="#48a999" />
+                android:thumbTint="@color/colorPrimaryLight" />
 
             <TextView
                 android:id="@+id/tv_peso_puntuacion"
@@ -204,6 +207,22 @@
         </TableRow>
     </TableLayout>
 
+    <LinearLayout
+        android:id="@+id/layout_vino"
+        android:layout_width="match_parent"
+        android:layout_height="170dp"
+        android:layout_margin="8dp"
+        android:orientation="vertical"
+        android:padding="5dp">
+
+        <TextView
+            android:id="@+id/tv_vino"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="10dp"
+            android:scrollbars="vertical" />
+    </LinearLayout>
+
     <Button
         android:id="@+id/btn_obtener"
         android:layout_width="match_parent"
@@ -212,6 +231,8 @@
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         android:background="#00796b"
+        android:clickable="false"
+        android:enabled="false"
         android:text="Obtener Recomendación"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
