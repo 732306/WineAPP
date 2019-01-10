@@ -1,12 +1,18 @@
 <resources>
     <string name="app_name">WineAPP. Recomendador de vinos.</string>
-
     <string name="app_name_titulo">WineAPP</string>
     <string name="recomendador">Recomendador</string>
     <string name="info">Información</string>
+    <string name="vino_recomendado">Vino Recomendado</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_base">BaseActivity</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="description_app">DDS Recomendador de vinos basado en modelo subjetivo.
+        El usuario puede escoger la variedad de vino deseadas así como la importancia de los diferentes parámetros
+        y el programa indicará el vino que se adapta mejor a su necesidad.</string>
 </resources>

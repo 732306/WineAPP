@@ -1,16 +1,15 @@
 package com.unizar.wineapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
+
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -25,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity {
 
     private MobileServiceClient conexionServerAPI;
     private Spinner spinner;
@@ -36,11 +35,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private TextView tv_peso_precio, tv_peso_calidad, tv_peso_region, tv_peso_puntuacion;
 
     private final static String TODAS = "Todas";
+    private ProgressBar bar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        FrameLayout contentFrameLayout = (FrameLayout) findViewById(R.id.content_frame);
+        getLayoutInflater().inflate(R.layout.content_main, contentFrameLayout);
+        getSupportActionBar().setTitle(R.string.recomendador);
+
+        bar = findViewById(R.id.progressBar);
 
         spinner = (Spinner) findViewById(R.id.spinner);
 
@@ -49,15 +54,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
+        bar.setVisibility(View.VISIBLE);
         this.obtenerVariedades();
+        bar.setVisibility(View.INVISIBLE);
 
         findViewById(R.id.btn_obtener).setEnabled(true);
         findViewById(R.id.btn_obtener).setClickable(true);
-
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
 
         Button btn_obtener = (Button) findViewById(R.id.btn_obtener);
@@ -65,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         btn_obtener.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                findViewById(R.id.btn_obtener).setEnabled(false);
                 obtenerRecomendacion((Variedad) spinner.getSelectedItem());
             }
         });
@@ -169,16 +172,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        this.getSupportActionBar().setTitle(R.string.recomendador);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
     }
 
     private Variedad[] obtenerVariedades() {
@@ -211,6 +206,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private Vino obtenerRecomendacion(Variedad variedadSeleccionada) {
+
+        bar.setVisibility(View.VISIBLE);
         final ListenableFuture<Vino[]> listaVinos = conexionServerAPI.invokeApi("ObtenerVinos", variedadSeleccionada.getNombre(), Vino[].class);
 
         Futures.addCallback(listaVinos, new FutureCallback<Vino[]>() {
@@ -222,13 +219,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             @Override
             public void onSuccess(Vino[] vinos) {
 
-                TextView tv_vino = (TextView) findViewById(R.id.tv_vino);
-
-                tv_vino.setText(vinos[0].toString());
-
-
-                System.err.println("MAX Puntuacion: " + mejorCalidadPrecio(vinos) + " Calidad Precio del vino: " + calidadPrecioVino(vinos[0]) + " Puntuación de calidad: " + puntuacionCalidadPrecio(vinos[0],vinos));
-
 
                 int pesoPrecio, pesoCalidad, pesoRegion, pesoPuntuacion;
 
@@ -237,8 +227,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 pesoRegion = seekBar_region.getProgress();
                 pesoPuntuacion = seekBar_puntuacion.getProgress();
 
-                funcionValorVinos(vinos[0], vinos, pesoPrecio, pesoCalidad, pesoRegion, pesoPuntuacion);
+                Vino mejorVino = vinos[0];
+                float mejorValoracion=funcionValorVinos(vinos[0],vinos,pesoPrecio, pesoCalidad, pesoRegion, pesoPuntuacion);
 
+                for (int i=1;i < vinos.length;i++) {
+                    float valoracion = funcionValorVinos(vinos[i],vinos,pesoPrecio, pesoCalidad, pesoRegion, pesoPuntuacion);
+
+                    if(valoracion > mejorValoracion){
+                        mejorValoracion = valoracion;
+                        mejorVino = vinos[i];
+                    }
+                }
+
+                bar.setVisibility(View.INVISIBLE);
+
+                Intent anIntent = new Intent(getApplicationContext(), RecomendacionActivity.class);
+                anIntent.putExtra("Vino",mejorVino);
+                anIntent.putExtra("Valoracion",mejorValoracion);
+
+                startActivity(anIntent);
+                findViewById(R.id.btn_obtener).setEnabled(true);
+                drawerLayout.closeDrawers();
+
+                //System.err.println("MAX Puntuacion: " + mejorCalidadPrecio(vinos) + " Calidad Precio del vino: " + calidadPrecioVino(vinos[0]) + " Puntuación de calidad: " + puntuacionCalidadPrecio(vinos[0],vinos));
 
             }
         });
@@ -249,7 +260,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Float precio = Float.parseFloat(vino.getPrice());
         int[] maximosIntervalos = {Integer.MAX_VALUE, 1700, 1200, 500, 200, 100, 50, 30, 20, 10, 5};
 
-        for (int i = 0; i < maximosIntervalos.length; i++) {
+        for (int i = 0; i < maximosIntervalos.length-1; i++) {
+
             if (precio > maximosIntervalos[i + 1])
                 return i;
         }
@@ -311,22 +323,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 puntuacionCalidadPrecio(vino,vinos) * pesoCalidad +
                 puntuacionRegion(vino) * pesoRegion +
                 puntuacionPuntuacion(vino) * pesoPuntuacion )/totalPuntos;
-        System.err.println("Pesos : "+ pesoPrecio + " " + pesoCalidad + " " + pesoRegion + " " + pesoPuntuacion + " PuntPrecio " +puntuacionPrecio(vino) + " puntCalidad " +puntuacionCalidadPrecio(vino,vinos)+ " PuntRegion: " + puntuacionRegion(vino) + " puntPuntuacion " + puntuacionPuntuacion(vino)+" PUNTUACION:"+puntuacion );
-
-        return 0;
+        //System.err.println("Vino: " + vino.toString() +  "Pesos : "+ pesoPrecio + " " + pesoCalidad + " " + pesoRegion + " " + pesoPuntuacion + " PuntPrecio " +puntuacionPrecio(vino) + " puntCalidad " +puntuacionCalidadPrecio(vino,vinos)+ " PuntRegion: " + puntuacionRegion(vino) + " puntPuntuacion " + puntuacionPuntuacion(vino)+" PUNTUACION:"+puntuacion );
+        return puntuacion;
     }
 
 
-    @Override
-    public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }
 
+    /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -334,22 +337,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_recomendador) {
-            this.getSupportActionBar().setTitle(R.string.recomendador);
-        } else if (id == R.id.nav_info) {
-            this.getSupportActionBar().setTitle(R.string.info);
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
+    */
 }

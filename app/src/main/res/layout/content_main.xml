@@ -2,16 +2,14 @@
 <android.support.v7.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/layour_config"
+    android:id="@+id/layout_config"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="8dp"
     android:scrollbars="vertical"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".MainActivity"
-    tools:showIn="@layout/app_bar_main"
-    >
+    tools:context=".MainActivity">
 
 
     <TextView
@@ -55,6 +53,7 @@
         android:textSize="18dp" />
 
     <TableLayout
+        android:id="@+id/tabla_pesos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
@@ -207,21 +206,17 @@
         </TableRow>
     </TableLayout>
 
-    <LinearLayout
-        android:id="@+id/layout_vino"
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
         android:layout_width="match_parent"
-        android:layout_height="170dp"
-        android:layout_margin="8dp"
-        android:orientation="vertical"
-        android:padding="5dp">
+        android:layout_height="40dp"
+        android:layout_margin="15dp"
+        android:visibility="invisible" />
 
-        <TextView
-            android:id="@+id/tv_vino"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:scrollbars="vertical" />
-    </LinearLayout>
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="100dp" />
 
     <Button
         android:id="@+id/btn_obtener"
@@ -233,6 +228,7 @@
         android:background="#00796b"
         android:clickable="false"
         android:enabled="false"
+        android:saveEnabled="false"
         android:text="Obtener Recomendación"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
