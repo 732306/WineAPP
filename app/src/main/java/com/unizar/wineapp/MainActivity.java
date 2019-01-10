@@ -33,7 +33,7 @@ public class MainActivity extends BaseActivity {
     private List<Variedad> lista;
     private SeekBar seekBar_precio, seekBar_calidad, seekBar_region, seekBar_puntuacion;
     private TextView tv_peso_precio, tv_peso_calidad, tv_peso_region, tv_peso_puntuacion;
-
+    private Button btn_obtener;
     private final static String TODAS = "Todas";
     private ProgressBar bar;
 
@@ -46,23 +46,25 @@ public class MainActivity extends BaseActivity {
         getSupportActionBar().setTitle(R.string.recomendador);
 
         bar = findViewById(R.id.progressBar);
-
         spinner = (Spinner) findViewById(R.id.spinner);
+        btn_obtener = (Button) findViewById(R.id.btn_obtener);
+        seekBar_calidad = (SeekBar) findViewById(R.id.seekBar_calidad);
+        seekBar_precio = (SeekBar) findViewById(R.id.seekBar_precio);
+        seekBar_region = (SeekBar) findViewById(R.id.seekBar_region);
+        seekBar_puntuacion = (SeekBar) findViewById(R.id.seekBar_puntuacion);
+        tv_peso_precio = (TextView) findViewById(R.id.tv_peso_precio);
+        tv_peso_calidad = (TextView) findViewById(R.id.tv_peso_calidad);
+        tv_peso_region = (TextView) findViewById(R.id.tv_peso_region);
+        tv_peso_puntuacion = (TextView) findViewById(R.id.tv_peso_puntuacion);
+
+        bar.setVisibility(View.VISIBLE);
+
 
         try {
             conexionServerAPI = new MobileServiceClient("https://winedss2.azurewebsites.net", this);
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        bar.setVisibility(View.VISIBLE);
-        this.obtenerVariedades();
-        bar.setVisibility(View.INVISIBLE);
-
-        findViewById(R.id.btn_obtener).setEnabled(true);
-        findViewById(R.id.btn_obtener).setClickable(true);
-
-
-        Button btn_obtener = (Button) findViewById(R.id.btn_obtener);
 
         btn_obtener.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,17 +86,6 @@ public class MainActivity extends BaseActivity {
         } catch (NoClassDefFoundError | ClassCastException | NoSuchFieldException | IllegalAccessException e) {
             // silently fail...
         }
-
-        seekBar_calidad = (SeekBar) findViewById(R.id.seekBar_calidad);
-        seekBar_precio = (SeekBar) findViewById(R.id.seekBar_precio);
-        seekBar_region = (SeekBar) findViewById(R.id.seekBar_region);
-        seekBar_puntuacion = (SeekBar) findViewById(R.id.seekBar_puntuacion);
-
-        tv_peso_precio = (TextView) findViewById(R.id.tv_peso_precio);
-        tv_peso_calidad = (TextView) findViewById(R.id.tv_peso_calidad);
-        tv_peso_region = (TextView) findViewById(R.id.tv_peso_region);
-        tv_peso_puntuacion = (TextView) findViewById(R.id.tv_peso_puntuacion);
-
 
         seekBar_precio.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int progress = 0;
@@ -174,6 +165,10 @@ public class MainActivity extends BaseActivity {
 
 
 
+        this.obtenerVariedades();
+        bar.setVisibility(View.INVISIBLE);
+        btn_obtener.setClickable(true);
+        btn_obtener.setEnabled(true);
     }
 
     private Variedad[] obtenerVariedades() {
@@ -195,6 +190,9 @@ public class MainActivity extends BaseActivity {
                 comboAdapter = new ArrayAdapter<Variedad>(getApplicationContext(), android.R.layout.simple_spinner_dropdown_item, lista);
                 comboAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 spinner.setAdapter(comboAdapter);
+
+
+
             }
 
             @Override
@@ -241,9 +239,16 @@ public class MainActivity extends BaseActivity {
 
                 bar.setVisibility(View.INVISIBLE);
 
+
                 Intent anIntent = new Intent(getApplicationContext(), RecomendacionActivity.class);
                 anIntent.putExtra("Vino",mejorVino);
                 anIntent.putExtra("Valoracion",mejorValoracion);
+
+                anIntent.putExtra("PuntuacionPrecio",puntuacionPrecio(mejorVino));
+                anIntent.putExtra("PuntuacionCalidad",puntuacionCalidadPrecio(mejorVino,vinos));
+                anIntent.putExtra("PuntuacionRegion",puntuacionRegion(mejorVino));
+                anIntent.putExtra("PuntuacionPuntuacion",puntuacionPuntuacion(mejorVino));
+
 
                 startActivity(anIntent);
                 findViewById(R.id.btn_obtener).setEnabled(true);

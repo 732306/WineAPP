@@ -24,6 +24,12 @@ public class RecomendacionActivity extends BaseActivity {
         mejorVino = (Vino) getIntent().getSerializableExtra("Vino");
         float valoracion = (float)getIntent().getSerializableExtra("Valoracion");
 
+        float puntPrecio = (float)getIntent().getSerializableExtra("PuntuacionPrecio");
+        float puntCalidad = (float)getIntent().getSerializableExtra("PuntuacionCalidad");
+        float puntRegion = (float)getIntent().getSerializableExtra("PuntuacionRegion");
+        float puntPuntiacion = (float)getIntent().getSerializableExtra("PuntuacionPuntuacion");
+
+
         TextView tv_titulo = (TextView) vista.findViewById(R.id.tv_titulo_vino);
         TextView tv_descripcion = (TextView) vista.findViewById(R.id.tv_descripcion_vino);
         TextView tv_precio = (TextView) vista.findViewById(R.id.tv_precio_vino);
@@ -33,6 +39,12 @@ public class RecomendacionActivity extends BaseActivity {
         TextView tv_puntuacion = (TextView) vista.findViewById(R.id.tv_puntuacion_vino);
         TextView tv_valoracion = (TextView) vista.findViewById(R.id.tv_valor_funcion);
 
+        TextView tv_punt_precio = (TextView) vista.findViewById(R.id.tv_punt_precio);
+        TextView tv_punt_calidad = (TextView) vista.findViewById(R.id.tv_punt_calidad);
+        TextView tv_punt_region = (TextView) vista.findViewById(R.id.tv_punt_region);
+        TextView tv_punt_puntuacion = (TextView) vista.findViewById(R.id.tv_punt_punt);
+
+
         tv_titulo.setText(mejorVino.getTitle().toString());
         tv_descripcion.setText((mejorVino.getDescription()));
         tv_precio.setText(mejorVino.getPrice());
@@ -41,6 +53,12 @@ public class RecomendacionActivity extends BaseActivity {
         tv_catador.setText(mejorVino.getTaster());
         tv_puntuacion.setText(mejorVino.getPoints());
         tv_valoracion.setText(Float.toString(valoracion));
+
+        tv_punt_precio.setText(Float.toString(puntPrecio));
+        tv_punt_calidad.setText(Float.toString(puntCalidad));
+        tv_punt_region.setText(Float.toString(puntRegion));
+        tv_punt_puntuacion.setText(Float.toString(puntPuntiacion));
+
 
 
     }
