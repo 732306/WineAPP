@@ -47,7 +47,7 @@ public class RecomendacionActivity extends BaseActivity {
 
         tv_titulo.setText(mejorVino.getTitle().toString());
         tv_descripcion.setText((mejorVino.getDescription()));
-        tv_precio.setText(mejorVino.getPrice());
+        tv_precio.setText(mejorVino.getPrice() + "€");
         tv_pais.setText(mejorVino.getCountry());
         tv_provincia.setText(mejorVino.getProvince());
         tv_catador.setText(mejorVino.getTaster());
@@ -58,9 +58,6 @@ public class RecomendacionActivity extends BaseActivity {
         tv_punt_calidad.setText(Float.toString(puntCalidad));
         tv_punt_region.setText(Float.toString(puntRegion));
         tv_punt_puntuacion.setText(Float.toString(puntPuntiacion));
-
-
-
     }
 
 }
