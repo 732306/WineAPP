@@ -9,6 +9,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+/**
+ * Clase BaseActivity.
+ * Esta clase será la actividad base de la que heredarán el resto de actividades.
+ *
+ * De esta forma todas contarán con el mismo menú.
+ *
+ * @author: Alejandro y Alberto
+ */
 public class BaseActivity extends AppCompatActivity {
 
     DrawerLayout drawerLayout;
@@ -32,6 +40,10 @@ public class BaseActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(MenuItem item) {
                 int id = item.getItemId();
+
+                /*
+                 *switch para determinar qué actividad se lanzará con cada opción del menú.
+                 */
                 switch (id) {
 
                     case R.id.nav_info:
